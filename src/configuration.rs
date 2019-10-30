@@ -11,9 +11,9 @@ pub struct Config {
 impl Config {
 
     pub fn to_json_string(&self) -> String {
-        let config_content = vec!["{\n", "bot_token: ", &self.bot_token, 
-        ",\ngiphy_api_key: ", &self.giphy_api_key, ",\nnext_session: ", &self.next_session,
-        "\n}"];
+        let config_content = vec!["{\n", "\"bot_token\": \"", &self.bot_token, 
+        "\",\n\"giphy_api_key\": \"", &self.giphy_api_key, "\",\n\"next_session\": \"", &self.next_session.as_str(),
+        "\"\n}"];
         config_content.join("")
     }
 
@@ -36,5 +36,5 @@ fn parse_config(contents: String) -> Config {
     //eprintln!("Data in parse_config: {:?}", data);
     Config { bot_token: String::from(data["bot_token"].as_str().unwrap()), 
     giphy_api_key: String::from(data["giphy_api_key"].as_str().unwrap()),
-    next_session: String::from(data["next_session"].as_str().unwrap())}
+    next_session: String::from(data["next_session"].as_str().unwrap()) }
 }

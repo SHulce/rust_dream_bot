@@ -4,13 +4,14 @@ use serenity::{
     model::{channel::Message, gateway::Ready},
     prelude::*,
 };
+use std::sync::RwLock;
 
 mod bot_commands;
 mod configuration;
 
 fn main() {
     let config: configuration::Config = configuration::initialize_config();
-    let mut client = Client::new(config.bot_token.clone(), Handler{ config }).expect("Error Creating Client!");
+    let mut client = Client::new(config.bot_token.clone(), Handler{ config: RwLock::new(config) }).expect("Error Creating Client!");
     if let Err(why) = client.start() {
         println!("Client error: {:?}", why);
     }
@@ -18,7 +19,7 @@ fn main() {
 }
 
 struct Handler {
-    config: configuration::Config, // Cell/RefCell/Box
+    config: RwLock<configuration::Config>,
 }
 
 impl EventHandler for Handler {
@@ -31,21 +32,22 @@ impl EventHandler for Handler {
             "!test" => bot_commands::test(&context, &message),
             "!commands" => bot_commands::commands(&context, &message),
             "!add" => bot_commands::add(&context, &message, &message_content),
-            "!gif" => bot_commands::gif(&context, &message, &mut message_content, &self.config.giphy_api_key),
-            "!nextsession" => {
+            "!gif" => bot_commands::gif(&context, &message, &mut message_content, &self.config.read().unwrap().giphy_api_key),
+            "!nextsession" => bot_commands::next_session(&context, &message, &self.config.read().unwrap().next_session),
+            "!setnextsession" => { 
                 let saved = self.update_session(&mut message_content);
-                bot_commands::next_session(&context, &message, &self.config.next_session) },
-            "!setnextsession" => bot_commands::set_next_session(&context, &message, &self.config),
+                bot_commands::set_next_session(&context, &message, &self.config.read().unwrap());
+            },
             _ => {eprintln!("No Action to take.")}
         }
     }
 }
 
 impl Handler {
-    fn update_session(&mut self, new_session: &mut Vec<&str>) -> std::io::Result<()>{
+    fn update_session(&self, new_session: &mut Vec<&str>) -> std::io::Result<()>{
         new_session.remove(0);
         let session_string = new_session.join(" ");
-        self.config.next_session = session_string;
-        self.config.save_config()
+        self.config.write().unwrap().next_session = session_string;
+        self.config.read().unwrap().save_config()
     } 
 }
