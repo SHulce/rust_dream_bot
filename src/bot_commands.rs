@@ -9,7 +9,7 @@
     use std::str::FromStr;
     use std::collections::HashMap;
 
-    const _COMMANDS: [&str; 6] = ["!test", "!add", "!gif", "!nextsession", "!setnextsession", "!commands"];
+    const _COMMANDS: [&str; 5] = ["!add", "!gif", "!nextsession", "!setnextsession", "!commands"];
 
     pub fn test(context: &Context, message: &Message) {
         if let Err(why) = message.channel_id.say(&context.http, "I hear ya!") {
@@ -60,13 +60,15 @@
         }
     }
 
-    pub fn next_session(context: &Context, message: &Message) {
-        if let Err(why) = message.channel_id.say(&context.http, "Functionality In Development") {
+    pub fn next_session(context: &Context, message: &Message, next_session: &String) {
+        let output_vec = vec!["Next session scheduled for: ", &next_session];
+        let output = output_vec.join("");
+        if let Err(why) = message.channel_id.say(&context.http, &output) {
             eprintln!("Couldn't send session details: {:?}", why);
         }
     }
 
-    pub fn set_next_session(context: &Context, message: &Message) {
+    pub fn set_next_session(context: &Context, message: &Message, config: &crate::configuration::Config) {
         if let Err(why) = message.channel_id.say(&context.http, "Functionality in Development") {
             eprintln!("Couldn't send confirmation of session set: {:?}", why);
         }

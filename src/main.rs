@@ -18,7 +18,7 @@ fn main() {
 }
 
 struct Handler {
-    pub config: configuration::Config,
+    config: configuration::Config, // Cell/RefCell/Box
 }
 
 impl EventHandler for Handler {
@@ -32,9 +32,20 @@ impl EventHandler for Handler {
             "!commands" => bot_commands::commands(&context, &message),
             "!add" => bot_commands::add(&context, &message, &message_content),
             "!gif" => bot_commands::gif(&context, &message, &mut message_content, &self.config.giphy_api_key),
-            "!nextsession" => bot_commands::next_session(&context, &message),
-            "!setnextsession" => bot_commands::set_next_session(&context, &message),
+            "!nextsession" => {
+                let saved = self.update_session(&mut message_content);
+                bot_commands::next_session(&context, &message, &self.config.next_session) },
+            "!setnextsession" => bot_commands::set_next_session(&context, &message, &self.config),
             _ => {eprintln!("No Action to take.")}
         }
     }
+}
+
+impl Handler {
+    fn update_session(&mut self, new_session: &mut Vec<&str>) -> std::io::Result<()>{
+        new_session.remove(0);
+        let session_string = new_session.join(" ");
+        self.config.next_session = session_string;
+        self.config.save_config()
+    } 
 }
