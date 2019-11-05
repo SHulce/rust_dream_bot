@@ -1,6 +1,7 @@
     extern crate serenity;
     extern crate reqwest;
     extern crate serde_json;
+    extern crate rand;
 
     use serenity::{
     model::{channel::Message, gateway::Ready},
@@ -8,6 +9,7 @@
     };
     use std::str::FromStr;
     use std::collections::HashMap;
+    use rand::Rng;
 
     const _COMMANDS: [&str; 7] = ["Command List:\n", "!test", "!add", "!gif", "!nextsession", "!setnextsession", "!commands"];
 
@@ -44,8 +46,8 @@
             message_content.remove(0);
             &message_content.join("%20")[..]
         };
-        let rating = "g";
-        let request_vector = vec![giphy_url, api_key, "&tag=", tag, "&rating=", rating];
+        let rating = get_random_rating();
+        let request_vector = vec![giphy_url, api_key, "&tag=", tag, "&rating=", rating.as_str()];
         let request_string = request_vector.join("");
         eprintln!("Request String: {:?}", request_string);
         let gif_response_text: String = reqwest::get(&request_string[..]).unwrap_or_else( |error| {
@@ -58,6 +60,13 @@
         if let Err(why) = message.channel_id.say(&context.http, gif_json_urls["bitly_gif_url"].as_str().unwrap()) {
             eprintln!("Couldn't send gif: {:?}", why);
         }
+    }
+
+    fn get_random_rating() -> String {
+        let ratings_array = ["g", "pg", "pg-13"];
+        let rating_index = rand::thread_rng().gen_range(0,3);
+        String::from(ratings_array[rating_index])
+
     }
 
     pub fn next_session(context: &Context, message: &Message, next_session: &String) {
