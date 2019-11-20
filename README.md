@@ -1,7 +1,7 @@
 Rust Dream Bot
 ----------------------------------
 
-The Rust Dream Bot is a simple project building a Discord chatbot in the Rust programming language. 
+The Rust Dream Bot is a simple project building a Discord chatbot in the Rust programming language. I am utilizing the Serenity framework and Serde JSON crates.
 
 I am currently extending the project to perform chat based queries of the D&D 5e SRD public information. I am utilizing the JSON formatted data provided by BTMorton so full credit to them for the JSON data. The original repo for that data may be found [here](https://github.com/BTMorton/dnd-5e-srd)
 
