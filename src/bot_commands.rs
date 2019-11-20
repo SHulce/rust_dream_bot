@@ -77,14 +77,6 @@
         }
     }
 
-    pub fn set_next_session(context: &Context, message: &Message, config: &crate::configuration::Config) {
-        let output_vec = vec!["Next session updated to: ", &config.next_session];
-        let output = output_vec.join("");
-        if let Err(why) = message.channel_id.say(&context.http, &output) {
-            eprintln!("Couldn't send confirmation of session set: {:?}", why);
-        }
-    }
-
     pub fn commands(context: &Context, message: &Message) {
         let iter = _COMMANDS.into_iter();
         let mut output_vector: Vec<&str> = Vec::new();

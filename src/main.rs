@@ -36,7 +36,7 @@ impl EventHandler for Handler {
             "!nextsession" => bot_commands::next_session(&context, &message, &self.config.read().unwrap().next_session),
             "!setnextsession" => { 
                 let saved = self.update_session(&mut message_content);
-                bot_commands::set_next_session(&context, &message, &self.config.read().unwrap());
+                bot_commands::next_session(&context, &message, &self.config.read().unwrap().next_session);
             },
             _ => {eprintln!("No Action to take.")}
         }
