@@ -57,12 +57,9 @@ impl Bot {
         }
     }
 
-    pub fn gif(&self, context: &Context, message: &Message, message_content: &mut Vec<&str>) {
+    pub fn gif(&self, context: &Context, message: &Message, message_content: &Vec<&str>) {
         let giphy_url = "https://api.giphy.com/v1/gifs/random?api_key=";
-        let tag = { 
-            message_content.remove(0);
-            &message_content.join("%20")[..]
-        };
+        let tag = &message_content.join("%20")[..];
         let rating = get_random_rating();
         let giphy_api_key = &(self.config.read().unwrap().giphy_api_key);
         let request_vector = vec![giphy_url, giphy_api_key, "&tag=", tag, "&rating=", rating.as_str()];
@@ -99,14 +96,31 @@ impl Bot {
         }
     }
 
-    pub fn update_session(&self, context: &Context, message: &Message, new_session: &mut Vec<&str>) {
-        new_session.remove(0);
+    pub fn update_session(&self, context: &Context, message: &Message, new_session: &Vec<&str>) {
+        //new_session.remove(0);
         let session_string = new_session.join(" ");
         self.config.write().unwrap().next_session = session_string;
         if let Err(why) = self.config.read().unwrap().save_config() {
              eprintln!("Couldn't save updated configuration: {:?}", why);
          }
         self.next_session(context, message);
+    }
+
+    pub fn dnd_search(&self, context: &Context, message: &Message, search: &mut Vec<&str>) {
+        //search.remove(0);
+        let search_type = search.remove(0);
+        let mut output_vector: Vec<&str> = Vec::new();
+        let file_map = &self.config.read().unwrap().files;
+
+        if search_type == "list" {
+            output_vector.push("Searchable Files: ");
+            for file in file_map.keys() {
+                output_vector.push(file.as_str());
+           }
+        }
+        if let Err(why) = message.channel_id.say(&context.http, output_vector.join(" ")) {
+            eprintln!("Counldn't send file list: {:?}", why);
+        }
     }
 
 }

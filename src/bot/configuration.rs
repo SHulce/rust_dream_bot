@@ -2,6 +2,7 @@ extern crate serde;
 extern crate serde_json;
 
 use std::fs;
+use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 
 const _CONFIG_FILENAME: &str = "resources/botconfig.json";
@@ -11,6 +12,7 @@ pub struct Config {
     pub bot_token: String,
     pub giphy_api_key: String,
     pub next_session: String,
+    pub files: HashMap<String, String>,
 }
 
 impl Config {
