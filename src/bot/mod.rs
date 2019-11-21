@@ -23,7 +23,7 @@ pub struct Bot {
 impl Bot {
 
     pub fn new() -> Bot {
-        Bot{config: RwLock::new(configuration::initialize_config())}
+        Bot{config: RwLock::new(configuration::Config::new())}
     }
 
     pub fn test(&self, context: &Context, message: &Message) {
