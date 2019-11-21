@@ -5,13 +5,10 @@ use serenity::{
     prelude::*,
 };
 
-mod bot_commands;
 mod bot;
-use bot::configuration;
-
 
 fn main() {
-    let the_bot = bot::bot::new();
+    let the_bot = bot::Bot::new();
     let mut client = Client::new(the_bot.get_bot_token(), Handler{ the_bot }).expect("Error Creating Client!");
     if let Err(why) = client.start() {
         println!("Client error: {:?}", why);
@@ -20,7 +17,7 @@ fn main() {
 }
 
 struct Handler {
-    the_bot: bot::bot,
+    the_bot: bot::Bot,
 }
 
 impl EventHandler for Handler {
@@ -35,21 +32,8 @@ impl EventHandler for Handler {
             "!add" => self.the_bot.add(&context, &message, &message_content),
             "!gif" => self.the_bot.gif(&context, &message, &mut message_content),
             "!nextsession" => self.the_bot.next_session(&context, &message),
-            "!setnextsession" => { 
-                let saved = self.update_session(&mut message_content);
-                self.the_bot.next_session(&context, &message);
-            },
+            "!setnextsession" => self.the_bot.update_session(&context, &message, &mut message_content),
             _ => {eprintln!("No Action to take.")}
         }
     }
-}
-
-impl Handler {
-    fn update_session(&self, new_session: &mut Vec<&str>) -> std::io::Result<()>{
-        /*new_session.remove(0);
-        let session_string = new_session.join(" ");
-        self.config.write().unwrap().next_session = session_string;
-        self.config.read().unwrap().save_config()*/
-        Ok(())
-    } 
 }

@@ -12,18 +12,18 @@ use std::collections::HashMap;
 use rand::Rng;
 use std::sync::RwLock;
 
-pub mod configuration;
+mod configuration;
 
 const _COMMANDS: [&str; 7] = ["Command List:\n", "!test", "!add", "!gif", "!nextsession", "!setnextsession", "!commands"];
 
-pub struct bot {
+pub struct Bot {
     config: RwLock<configuration::Config>,
 }
 
-impl bot {
+impl Bot {
 
-    pub fn new() -> bot {
-        bot{config: RwLock::new(configuration::initialize_config())}
+    pub fn new() -> Bot {
+        Bot{config: RwLock::new(configuration::initialize_config())}
     }
 
     pub fn test(&self, context: &Context, message: &Message) {
@@ -74,7 +74,6 @@ impl bot {
         }).text().unwrap();
         let gif_response_json: serde_json::value::Value = serde_json::from_str(&gif_response_text).unwrap();
         let gif_json_urls: &serde_json::value::Value = &gif_response_json["data"];
-        //eprintln!("Response: {:?}", gif_response_json);
         if let Err(why) = message.channel_id.say(&context.http, gif_json_urls["bitly_gif_url"].as_str().unwrap()) {
             eprintln!("Couldn't send gif: {:?}", why);
         }
@@ -98,6 +97,16 @@ impl bot {
         if let Err(why) = message.channel_id.say(&context.http, output_vector.join(" ")) {
             eprintln!("Couldn't send commands: {:?}", why);
         }
+    }
+
+    pub fn update_session(&self, context: &Context, message: &Message, new_session: &mut Vec<&str>) {
+        new_session.remove(0);
+        let session_string = new_session.join(" ");
+        self.config.write().unwrap().next_session = session_string;
+        if let Err(why) = self.config.read().unwrap().save_config() {
+             eprintln!("Couldn't save updated configuration: {:?}", why);
+         }
+        self.next_session(context, message);
     }
 
 }
