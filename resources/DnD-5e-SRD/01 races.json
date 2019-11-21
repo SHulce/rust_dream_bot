@@ -1,5 +1,5 @@
 {
-    "Races": {
+    
         "Racial Traits": {
             "content": "The description of each race includes racial traits that are common to members of that race. The following entries appear among the traits of most races.",
             "Ability Score Increase": "Every race increases one or more of a character’s ability scores.",
@@ -236,5 +236,5 @@
                 ]
             }
         }
-    }
+    
 }

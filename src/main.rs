@@ -9,6 +9,7 @@ mod bot;
 
 fn main() {
     let the_bot = bot::Bot::new();
+    eprintln!("Bot Initialized");
     let mut client = Client::new(the_bot.get_bot_token(), Handler{ the_bot }).expect("Error Creating Client!");
     if let Err(why) = client.start() {
         println!("Client error: {:?}", why);
@@ -23,7 +24,7 @@ struct Handler {
 impl EventHandler for Handler {
 
     fn message(&self, context: Context, message: Message) {
-        eprintln!("{:?}", message);
+        //eprintln!("{:?}", message);
         let mut message_content: Vec<&str> = message.content.split(' ').collect();
         let command = message_content.remove(0);
         eprintln!("Message Content First Piece: {}", command);

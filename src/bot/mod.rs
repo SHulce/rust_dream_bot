@@ -8,11 +8,11 @@ model::{channel::Message, gateway::Ready},
 prelude::*,
 };
 use std::str::FromStr;
-use std::collections::HashMap;
 use rand::Rng;
 use std::sync::RwLock;
 
 mod configuration;
+mod data_access;
 
 const _COMMANDS: [&str; 7] = ["Command List:\n", "!test", "!add", "!gif", "!nextsession", "!setnextsession", "!commands"];
 
@@ -38,11 +38,11 @@ impl Bot {
 
     pub fn add(&self, context: &Context, message: &Message, message_content: &Vec<&str>) {
         let mut outbound_message: String = String::new();
-        if message_content.len() < 3 {
+        if message_content.len() < 2 {
             outbound_message = String::from("Not enough arguments!! Should be like this: !add num1 num2...numX");
         } else {
             let mut result: f32 = 0.0;
-            for i in 1..message_content.len() {
+            for i in 0..message_content.len() {
                 result = result + f32::from_str(message_content[i]).unwrap_or_else( |err| {
                     eprintln!("Failure in addition: {:?}", err);
                     outbound_message = String::from("Invalid Parameters");
@@ -108,18 +108,32 @@ impl Bot {
 
     pub fn dnd_search(&self, context: &Context, message: &Message, search: &mut Vec<&str>) {
         //search.remove(0);
-        let search_type = search.remove(0);
+        let search_command = search.remove(0).to_lowercase();
+        let search_query = search.join(" ");
+        let search_result: String;
         let mut output_vector: Vec<&str> = Vec::new();
         let file_map = &self.config.read().unwrap().files;
-
-        if search_type == "list" {
-            output_vector.push("Searchable Files: ");
-            for file in file_map.keys() {
-                output_vector.push(file.as_str());
-           }
+        match search_command.as_str() {
+            "list" => {
+                output_vector.push("Searchable Files: ");
+                for file in file_map.keys() {
+                    output_vector.push(file.as_str());
+                }
+            },
+            "help" => {
+                output_vector.push("To use `!dnd` command:\n ```!dnd [list..help..search block] [query]```");
+            },
+            _ => {
+                if file_map.contains_key(&search_command) {
+                    search_result = data_access::search(file_map.get(&search_command).unwrap(), &search_query);
+                    output_vector.push(search_result.as_str());
+                } else {
+                    output_vector.push("Bad query. Section doesn't exist or is mis-spelled. type ```!dnd help``` for format");
+                }
+            }
         }
         if let Err(why) = message.channel_id.say(&context.http, output_vector.join(" ")) {
-            eprintln!("Counldn't send file list: {:?}", why);
+            eprintln!("Counldn't send search data: {:?}", why);
         }
     }
 

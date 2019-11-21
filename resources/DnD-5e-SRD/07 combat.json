@@ -1,6 +1,5 @@
 {
-    "Combat": {
-        "The Order of Combat": {
+    
             "content": "A typical combat encounter is a clash between two sides, a flurry of weapon swings, feints, parries, footwork, and spellcasting. The game organizes the chaos of combat into a cycle of rounds and turns. A **round** represents about 6 seconds in the game world. During a round, each participant in a battle takes a **turn**. The order of turns is determined at the beginning of a combat encounter, when everyone rolls initiative. Once everyone has taken a turn, the fight continues to the next round if neither side has defeated the other.",
             "Combat Step by Step": [
                 "**Determine surprise.** The GM determines whether anyone involved in the combat encounter is surprised.",
@@ -53,7 +52,7 @@
                     "When you take a reaction, you can’t take another one until the start of your next turn. If the reaction interrupts another creature’s turn, that creature can continue its turn right after the reaction."
                 ]
             }
-        },
+        ,
         "Movement and Position": {
             "content": [
                 "In combat, characters and monsters are in constant motion, often using movement and position to gain the upper hand.",
@@ -411,5 +410,5 @@
                 "Creatures and objects that are fully immersed in water have resistance to fire damage."
             ]
         }
-    }
+    
 }
