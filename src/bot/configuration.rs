@@ -18,7 +18,7 @@ pub struct Config {
 impl Config {
 
     pub fn new() -> Config {
-        let config_content = fs::read_to_string(_CONFIG_FILENAME).expect("Failed to open config");
+        let config_content = fs::read_to_string(_CONFIG_FILENAME).expect("Failed to open config. Please make sure there is a botconfig.json file in the resources folder.");
         serde_json::from_str(&config_content).unwrap()
     }
 
